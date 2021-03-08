@@ -1,0 +1,21 @@
+<%- include('header') -%>
+<div class="box">
+  <h1 id="heading">Today is <%= ListTitle %></h1>
+  <% newListItems.forEach(element => { %>
+  <div class="item">
+    <input type="checkbox" />
+    <p><%= element %></p>
+  </div>
+  <% }) %>
+  <form action="/" method="POST">
+    <input
+      type="text"
+      autocomplete="off"
+      name="newItem"
+      placeholder="New Item"
+    />
+    <button type="submit" name="list" value="<%= ListTitle %>">+</button>
+  </form>
+</div>
+
+<%- include('footer') -%>
