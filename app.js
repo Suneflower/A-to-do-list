@@ -1,10 +1,9 @@
 const express = require("express");
 const app = express();
 const ejs = require("ejs");
-const data = require('./date');
 const mongoose = require('mongoose');
-let items = [];
-let workItems = [];
+// let items = [];
+// let workItems = [];
 // let items = ["Reading","Sleeping", "Coding"]; 
 
 app.use(express.urlencoded({ extended: true }));
@@ -16,24 +15,61 @@ const itemsSchema = new mongoose.Schema({
 });
 const Item = mongoose.model('Item', itemsSchema);
 
+const item1 = new Item({
+  name : "Welcome to our todolist"
+});
+const item2 = new Item({
+  name : "Hit the button + to add a new item"
+});
+const item3 = new Item({
+  name : "Check the box to delete items"
+});
+
+const defaultItems = [item1, item2, item3];
+// Item.insertMany(defaultItems, (err) => {
+
+//   if (err) throw err;
+//   else {console.log("Successfully save default items to DB")};
+// });
+
+
 
 app.get("/", (req, res) => {
-  const day = data.getDate();
-  res.render("list", { ListTitle: day, newListItems: items });
+  Item.find({}, (err, foundItems) =>{
+    if (foundItems.length===0) {
+      Item.insertMany(defaultItems);
+      res.redirect("/");
+    } else {
+      res.render("list", { ListTitle: "Today", newListItems: foundItems});
+    }
+  })
 });
 app.post("/", (req, res) => {
-  item = req.body.newItem;
-  if (req.body.list === "Work List") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
-    res.redirect("/");
-  }
+  itemName = req.body.newItem;
+  const item = new Item({
+    name : itemName
+  });
+  item.save();
+  res.redirect("/");
+  // if (req.body.list === "Work List") {
+  //   workItems.push(item);
+  //   res.redirect("/work");
+  // } else {
+  //   items.push(item);
+  //   res.redirect("/");
+  // }
 });
+app.post("/delete", (req,res) =>{
+  const deleteItems = req.body.checkbox; //checkedItemId
+  Item.findByIdAndDelete(deleteItems, (err) =>{
+    if (err) throw err;
+  });
+  res.redirect("/");
+})
 
-app.get("/work", (req, res) => {
-  res.render("list", { ListTitle: "Work List", newListItems: workItems });
+app.get("/:topic", (req, res) => {
+  const topicList = req.params.topic;
+  res.render("list", { ListTitle: topicList, newListItems: workItems });
 });
 app.get('/about', (req,res) =>{
   // res.sendFile(__dirname+"/views/about.ejs")
