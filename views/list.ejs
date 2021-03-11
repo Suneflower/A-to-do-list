@@ -1,8 +1,9 @@
 <%- include('header') -%>
 <div class="box">
-  <h1 id="heading">Today is <%= ListTitle %></h1>
+  <h1 id="heading">List for <%= ListTitle %></h1>
 
   <form action="/delete" method="POST">
+    <input type="hidden" name ="listName" value="<%= ListTitle %>">
     <% newListItems.forEach(item => { %>
     <div class="item">
       <input type="checkbox" onChange ="this.form.submit()", value="<%= item.id %>" name="checkbox"/>
