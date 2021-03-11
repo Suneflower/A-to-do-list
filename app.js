@@ -2,13 +2,21 @@ const express = require("express");
 const app = express();
 const ejs = require("ejs");
 const data = require('./date');
+const mongoose = require('mongoose');
 let items = [];
 let workItems = [];
-// let items = ["Reading","Sleeping", "Coding"];
+// let items = ["Reading","Sleeping", "Coding"]; 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
+mongoose.connect('mongodb://localhost/todolistDB', {useNewUrlParser: true, useUnifiedTopology: true});
+const itemsSchema = new mongoose.Schema({
+  name: String
+});
+const Item = mongoose.model('Item', itemsSchema);
+
+
 app.get("/", (req, res) => {
   const day = data.getDate();
   res.render("list", { ListTitle: day, newListItems: items });
